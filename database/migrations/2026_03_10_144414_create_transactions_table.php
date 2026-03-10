@@ -16,7 +16,10 @@ return new class extends Migration
             $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['deposit', 'withdraw', 'transfer_send', 'transfer_receive']);
             $table->decimal('amount', 15, 2);
-            $table->unsignedBigInteger('related_wallet_id')->nullable();
+            $table->foreignId('related_wallet_id')
+                ->nullable()
+                ->constrained('wallets')
+                ->onDelete('set null');
             $table->string('description')->nullable();
             $table->timestamps();
         });
