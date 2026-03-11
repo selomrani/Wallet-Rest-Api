@@ -40,12 +40,12 @@ class WalletController extends Controller
             'user_id' => $user_id,
         ]);
 
-        return response()->json(['status' => 'success', 'message' => 'wallet was created successfuly']);
+        return response()->json(['status' => 'success', 'message' => 'wallet was created successfuly', 'data' => $wallet]);
     }
 
-    public function show(string $id)
+    public function show(Wallet $wallet)
     {
-        //
+        return response()->json(['status' => 'success', 'data' => $wallet]);
     }
 
     /**
