@@ -27,11 +27,22 @@ class WalletController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        $user_id = Auth::user()->id;
+        if (! $user_id) {
+            return response()->json(['status' => 'error', 'message' => 'You need to be logged in order to create a wallet'], 401);
+        }
+        $walletdata = $request->validate(['name' => 'required', 'currency' => 'required']);
+        $wallet = Wallet::create([
+            'name' => $walletdata['name'],
+            'currency' => $walletdata['currency'],
+            'user_id' => $user_id,
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
+        return response()->json(['status' => 'success', 'message' => 'wallet was created successfuly']);
+    }
+
     public function show(string $id)
     {
         //
