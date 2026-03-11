@@ -23,7 +23,9 @@ Route::post('/register', function (Request $request) {
     $token = $user->createToken('api-token');
 
     return response()->json([
-        'user' => $user,
+        'status' => 'success',
+        'message' => 'inscription réussie',
+        'data' => $user,
         'token' => $token->plainTextToken,
     ], 201);
 });
@@ -35,11 +37,22 @@ Route::post('/login', function (Request $request) {
     if (! Auth::attempt($credentials)) {
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
-
     $user = User::where('email', $request->email)->first();
+    $user->tokens()->delete();
     $token = $user->createToken('login-token');
 
     return response()->json([
+        'status' => 'success',
+        'message' => 'connexion succés',
+        'data' => $user,
         'token' => $token->plainTextToken,
+    ]);
+});
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    $request->user()->tokens()->delete();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Logged out successfully.',
     ]);
 });
