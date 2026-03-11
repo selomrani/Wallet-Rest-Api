@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,10 +72,11 @@ class WalletController extends Controller
             ], 403);
         }
         $wallet->increment('balance', $validated['amount']);
+        $transaction = Transaction::create(['wallet_id' => $wallet->id, 'type' => 'deposit', 'amount' => $validated['amount'], 'description' => "{$validated['amount']} was deposited in your wallet."]);
 
         return response()->json([
             'status' => 'success',
-            'message' => "{$validated['amount']} was deposited in your wallet.",
+            'transaction' => $transaction,
             'new_balance' => $wallet->balance,
         ]);
     }
@@ -98,10 +100,11 @@ class WalletController extends Controller
             ], 403);
         }
         $wallet->decrement('balance', $validated['amount']);
+        $transaction = Transaction::create(['wallet_id' => $wallet->id, 'type' => 'withdrawj', 'amount' => $validated['amount'], 'description' => "{$validated['amount']} was withdrawed from your wallet."]);
 
         return response()->json([
             'status' => 'success',
-            'message' => "{$validated['amount']} was withdrawed from your wallet.",
+            'transaction' => $transaction,
             'new_balance' => $wallet->balance,
         ]);
     }
