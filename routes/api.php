@@ -15,7 +15,6 @@ Route::post('/register', RegisterController::class);
 Route::post('/logout', LogoutController::class)->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('wallets', WalletController::class);
-});
-Route::middleware('auth:sanctum')->group(function () {
     Route::post('wallets/{wallet}/deposit', [WalletController::class, 'deposit']);
+    Route::post('wallets/{wallet}/withdraw', [WalletController::class, 'withdraw']);
 });

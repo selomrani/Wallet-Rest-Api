@@ -78,4 +78,31 @@ class WalletController extends Controller
             'new_balance' => $wallet->balance,
         ]);
     }
+
+    public function withdraw(Wallet $wallet, Request $request)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+        ]);
+        $user_id = Auth::user()->id;
+        if ($request->user()->id !== $wallet->user_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This wallet does not belong to you.',
+            ], 403);
+        }
+        if ($validated['amount'] > $wallet->balance) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'nsuffusiant balance',
+            ], 403);
+        }
+        $wallet->decrement('balance', $validated['amount']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "{$validated['amount']} was withdrawed from your wallet.",
+            'new_balance' => $wallet->balance,
+        ]);
+    }
 }
