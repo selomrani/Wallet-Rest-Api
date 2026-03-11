@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/user', function () {
+    return response()->json(['status' => 'success', 'data' => Auth::user()]);
 })->middleware('auth:sanctum');
 Route::post('/register', function (Request $request) {
     $userdata = $request->validate([
