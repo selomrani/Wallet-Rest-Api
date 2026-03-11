@@ -46,7 +46,9 @@ class WalletController extends Controller
 
     public function show(Wallet $wallet)
     {
-        return response()->json(['status' => 'success', 'data' => $wallet]);
+        $transactions = Transaction::where('wallet_id', $wallet->id)->get();
+
+        return response()->json(['status' => 'success', 'wallet' => $wallet, 'historique' => $transactions]);
     }
 
     /**
@@ -107,5 +109,12 @@ class WalletController extends Controller
             'transaction' => $transaction,
             'new_balance' => $wallet->balance,
         ]);
+    }
+
+    public function viewTransactions(Wallet $wallet)
+    {
+        $transactions = Transaction::where('wallet_id', $wallet->id)->get();
+
+        return response()->json(['status' => 'success', 'Historique des transactions' => $transactions]);
     }
 }
