@@ -15,7 +15,11 @@ class WalletController extends Controller
     public function index()
     {
         $user_id = Auth::user()->id;
-        $wallets = Wallet::where('user_id', '=', $user_id)->get();
+
+        if (! $user_id) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+        $wallets = Wallet::where('user_id', $user_id)->get();
 
         return response()->json(['status' => 'success', 'wallets' => $wallets]);
     }
