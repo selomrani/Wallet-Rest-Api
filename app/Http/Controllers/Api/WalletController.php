@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -116,5 +117,34 @@ class WalletController extends Controller
         $transactions = Transaction::where('wallet_id', $wallet->id)->get();
 
         return response()->json(['status' => 'success', 'Historique des transactions' => $transactions]);
+    }
+
+    public function transfer(Wallet $wallet, Request $request, WalletService $walletservice)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'recipient_id' => 'required|exists:wallets,id',
+        ]);
+        $walletservice->transfer($wallet->id, $validated['recipient_id'], $validated['amount']);
+
+        $receiver = Wallet::find($validated['recipient_id']);
+        $sender = Wallet::find($wallet->id);
+        $transaction = Transaction::create([
+            'wallet_id' => $wallet->id,
+            'type' => 'transfer_send',
+            'amount' => $validated['amount'],
+            'related_wallet_id' => $validated['recipient_id'],
+            'description' => "{$validated['amount']} was transferred to {$receiver->name}",
+        ]);
+
+        $transaction = Transaction::create([
+            'wallet_id' => $validated['recipient_id'],
+            'type' => 'transfer_receive',
+            'amount' => $validated['amount'],
+            'related_wallet_id' => $wallet->id,
+            'description' => "{$validated['amount']} was received from {$sender->name}",
+        ]);
+
+        return response()->json(['status' => 'success']);
     }
 }
