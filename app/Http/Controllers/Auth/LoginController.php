@@ -29,7 +29,9 @@ class LoginController extends Controller
             'status' => 'success',
             'message' => 'connexion succés',
             'data' => $user,
-            'token' => $token->plainTextToken,
-        ]);
+        ])->withCookie(
+            cookie('auth-cookie', $token->plainTextToken, 600
+            )
+        );
     }
 }

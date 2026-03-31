@@ -30,7 +30,7 @@ class RegisterController extends Controller
             'status' => 'success',
             'message' => 'inscription réussie',
             'data' => $user,
-            'token' => $token->plainTextToken,
-        ], 201);
+        ], 201)->withCookie(cookie('register-cookie', $token->plainTextToken, 600
+        ));
     }
 }
